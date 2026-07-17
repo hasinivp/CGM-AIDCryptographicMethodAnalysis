@@ -1,36 +1,36 @@
 [
     {
-	"reading_id":"935788d18404af513db5d266bf751145"
-	"sensor_current_reading":143
-	"trend":"flat"
+	"reading_id":"935788d18404af513db5d266bf751145",
+	"sensor_current_reading":143,
+	"trend":"flat",
 	"data/time":"2026-07-15T19:20:00.000Z"
-    }
+    },
 
     {
-	"reading_id":"935788d18404af513db5d266bf751146"
-	"sensor_current_reading":150
-	"trend":"flat"
+	"reading_id":"935788d18404af513db5d266bf751146",
+	"sensor_current_reading":150,
+	"trend":"flat",
 	"data/time":"2026-07-15T19:25:00.000Z"
-    }
+    },
 
     {
-	"reading_id":"935788d18404af513db5d266bf751147"
-	"sensor_current_reading":153
-	"trend":"flat"
+	"reading_id":"935788d18404af513db5d266bf751147",
+	"sensor_current_reading":153,
+	"trend":"flat",
 	"data/time":"2026-07-15T19:30:00.000Z"
-    }
+    },
 
     {
-	"reading_id":"935788d18404af513db5d266bf751148"
-	"sensor_current_reading":165
-	"trend":"upwards"
+	"reading_id":"935788d18404af513db5d266bf751148",
+	"sensor_current_reading":165,
+	"trend":"upwards",
 	"data/time":"2026-07-15T19:35:00.000Z"
-    }
+    },
 
     {
-	"reading_id":"935788d18404af513db5d266bf751145"
-	"sensor_current_reading":180
-	"trend":"upwards"
+	"reading_id":"935788d18404af513db5d266bf751145",
+	"sensor_current_reading":180,
+	"trend":"upwards",
 	"data/time":"2026-07-15T19:40:00.000Z"
     }
 

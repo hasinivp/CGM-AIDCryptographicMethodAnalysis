@@ -1,7 +1,7 @@
 #Mediates communication between CGM/AID data
 
 class CommunicationChannel:
-    def _init_(self):
+    def __init__(self):
         self.packet = None
 
     def send(self, packet):

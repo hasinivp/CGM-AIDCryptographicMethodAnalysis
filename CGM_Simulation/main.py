@@ -13,9 +13,9 @@ def main():
 
     #sent aid public key
     channel.send(test_insulin.return_public_key())
-    test_sensor(channel.receive())
+    test_sensor.key_exchange((channel.receive()))
 
     print("Succesful key exchange")
 
-if _name_ == "main":
+if __name__ == "__main__":
     main()

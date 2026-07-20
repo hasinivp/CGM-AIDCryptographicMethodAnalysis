@@ -5,14 +5,16 @@ import time
 import csv
 import statistics
 import pandas as pd
+import tracemalloc 
 
-
-def measure_time(func, *args, **kwargs):
+def measure_computation(func, *args, **kwargs):
     start = time.perf_counter()
+    tracemalloc.start()
     result  = func(*args, **kwargs)
     end = time.perf_counter()
+    current, peak = tracemalloc.get_traced_memory()
     elapsed = end-start
-    return result, elapsed
+    return result, elapsed, peak
 
 def store_stats(data):
     mean_val = statistics.mean(data)
@@ -24,14 +26,8 @@ def store_stats(data):
          })
     return df
 
-def main():
-    test_sensor = Sensor(json_filepath = "sample_messages.json")
-    test_insulin = InsulinPump()
-    channel = CommunicationChannel()
-    encryption_times = []
-    decryption_times = []
-    
-    #send cgm public key
+def aes_key_exchange():
+     #send cgm public key
     channel.send(test_sensor.return_public_key())
     test_insulin.key_exchange(channel.receive())
 
@@ -39,23 +35,38 @@ def main():
     channel.send(test_insulin.return_public_key())
     test_sensor.key_exchange((channel.receive()))
 
+def main():
+    test_sensor = Sensor(json_filepath = "sample_messages.json")
+    test_insulin = InsulinPump()
+    channel = CommunicationChannel()
+    encryption_times = []
+    decryption_times = []
+    final_dataset_collection = []
+    
+    key_exchange_time, key_exchange_memory  = measure_computation(aes_key_exchange)
+    
     print("Succesful key exchange")
 
-    for i in range (8):
-        crypto_output, enc_time = measure_time(test_sensor.aes_encryption)
+    for i in range (1000):
+        crypto_output, enc_time, enc_memory = measure_computation(test_sensor.aes_encryption)
         ct, nonce = crypto_output
         encryption_times.append(enc_time)
         channel.send([ct, nonce])
         received_packet = channel.receive()
-        plaintext, dec_time = measure_time(test_insulin.decrypt_aes, received_packet[0], received_packet[1])
+        plaintext, dec_time, dec_memory = measure_computation(test_insulin.decrypt_aes, received_packet[0], received_packet[1])
         decryption_times.append(dec_time)
         print("Decryption complete!")
         print(plaintext)
 
     df = store_stats(encryption_times)
+    final_dataset_collection.append(df)
     df.to_csv('encrypt_latency_data.csv', index=False)
     df = store_stats(decryption_times)
+    final_dataset_collection.append(df)
     df.to_csv('decrypt_latency_data.csv', index=False)
+
+    df_final = pd.concat(dataframe_collection, ignore_index = True)
+    df_final.to_csv('results.csv' ,index=False)
     
 if __name__ == "__main__":
     main()

@@ -6,6 +6,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
+import encryption
+import os
 
 class Sensor:
     def __init__(self, json_filepath):
@@ -28,8 +30,12 @@ class Sensor:
     def key_exchange(self, aid_public_key):
         self.shared_key = self.private_key.exchange(ec.ECDH(), aid_public_key)
         #use HDKF to derive the key
-        self.aes_key = HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=b"cgm-aid-connection").derive(self.shared_key)
-    
+        self.aes_key = HKDF(algorithm=hashes.SHA256(), length=16, salt=None, info=b"cgm-aid-connection").derive(self.shared_key) #length for AES-128
+
+    def aes_encryption(self):
+        self.reading = self.get_next_item()
+        self.plaintext = json.dumps(self.reading, indent=4)
+        return encryption.AES_GCM_Encrypt(self.plaintext, self.aes_key)
     
 
 

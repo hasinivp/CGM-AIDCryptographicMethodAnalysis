@@ -28,10 +28,67 @@
     },
 
     {
-	"reading_id":"935788d18404af513db5d266bf751145",
+	"reading_id":"935788d18404af513db5d266bf751149",
 	"sensor_current_reading":180,
 	"trend":"upwards",
 	"data/time":"2026-07-15T19:40:00.000Z"
-    }
+    },
 
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":190,
+	"trend":"upwards",
+	"data/time":"2026-07-15T19:45:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":192,
+	"trend":"flat",
+	"data/time":"2026-07-15T19:50:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":195,
+	"trend":"flat",
+	"data/time":"2026-07-15T19:55:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":193,
+	"trend":"flat",
+	"data/time":"2026-07-15T20:00:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":190,
+	"trend":"flat",
+	"data/time":"2026-07-15T20:05:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":184,
+	"trend":"downwards",
+	"data/time":"2026-07-15T20:10:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":175,
+	"trend":"downwards",
+	"data/time":"2026-07-15T20:15:00.000Z"
+    },
+
+    {
+	"reading_id":"935788d18404af513db5d266bf751149",
+	"sensor_current_reading":160,
+	"trend":"downwards",
+	"data/time":"2026-07-15T20:20:00.000Z"
+    }
+    
  ]

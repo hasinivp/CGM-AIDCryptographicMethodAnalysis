@@ -13,10 +13,10 @@ class InsulinPump:
     def return_public_key(self):
         return self.public_key
 
-    def key_exchange(self, aid_public_key):
+    def key_exchange(self, aid_public_key, key_length):
         self.shared_key = self.private_key.exchange(ec.ECDH(), aid_public_key)
         #use HDKF to derive the key
-        self.aes_key = HKDF(algorithm=hashes.SHA256(), length=16, salt=None, info=b"cgm-aid-connection").derive(self.shared_key)
+        self.aes_key = HKDF(algorithm=hashes.SHA256(), length=key_length, salt=None, info=b"cgm-aid-connection").derive(self.shared_key)
         
     def decrypt_aes(self, ciphertext, nonce):
         self.plaintext_bytes = encryption.AES_GCM_Decrypt(self.aes_key, ciphertext, None, nonce)

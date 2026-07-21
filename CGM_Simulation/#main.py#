@@ -41,6 +41,7 @@ def store_summary(enc_times, dec_times, enc_memory, dec_memory,  key_exchange, e
         'Average_Peak_Decryotion_Memory': [mean_dec_memory]
     })
     return df
+
 def aes_key_exchange(channel, test_sensor, test_insulin, key_len):
      #send cgm public key
     channel.send(test_sensor.return_public_key())

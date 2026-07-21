@@ -90,8 +90,14 @@ def full_session(enc_func, dec_func, key_len, final_dataset_collection, algo_nam
 
 def main():
     final_dataset_collection = []
-    full_session("aes_encryption", "decrypt_aes", 16, final_dataset_collection, "AES_GCM_128")
-    full_session("aes_encryption", "decrypt_aes", 32, final_dataset_collection, "AES_GCM_256")
+    full_session("aes_gcm_encryption", "decrypt_aes_gcm", 16, final_dataset_collection, "1_AES_GCM_128")
+    full_session("aes_gcm_encryption", "decrypt_aes_gcm", 16, final_dataset_collection, "2_AES_GCM_128")
+    full_session("aes_gcm_encryption", "decrypt_aes_gcm", 32, final_dataset_collection, "1_AES_GCM_256")
+    full_session("aes_gcm_encryption", "decrypt_aes_gcm", 32, final_dataset_collection, "2_AES_GCM_256")
+    full_session("aes_ccm_encryption", "decrypt_aes_ccm", 16, final_dataset_collection, "1_AES_CCM_128")
+    full_session("aes_ccm_encryption", "decrypt_aes_ccm", 16, final_dataset_collection, "2_AES_CCM_128")
+    full_session("aes_ccm_encryption", "decrypt_aes_ccm", 32, final_dataset_collection, "1_AES_CCM_256")
+    full_session("aes_ccm_encryption", "decrypt_aes_ccm", 32, final_dataset_collection, "2_AES_CCM_256")
     df_final = pd.concat(final_dataset_collection, ignore_index = True)
     df_final.to_csv('results.csv' ,index=False)
     

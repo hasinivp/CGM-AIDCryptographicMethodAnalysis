@@ -18,8 +18,13 @@ class InsulinPump:
         #use HDKF to derive the key
         self.aes_key = HKDF(algorithm=hashes.SHA256(), length=key_length, salt=None, info=b"cgm-aid-connection").derive(self.shared_key)
         
-    def decrypt_aes(self, ciphertext, nonce):
+    def decrypt_aes_gcm(self, ciphertext, nonce):
         self.plaintext_bytes = encryption.AES_GCM_Decrypt(self.aes_key, ciphertext, None, nonce)
+        self.plaintext = self.plaintext_bytes.decode('utf-8')
+        return self.plaintext
+    
+    def decrypt_aes_ccm(self, ciphertext, nonce):
+        self.plaintext_bytes = encryption.AES_CCM_Decrypt(self.aes_key, ciphertext, None, nonce)
         self.plaintext = self.plaintext_bytes.decode('utf-8')
         return self.plaintext
     #eventually should convert to another long-term patient database with readings, etc.

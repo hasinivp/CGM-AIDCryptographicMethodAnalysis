@@ -1,7 +1,7 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM, AESCCM
 import os
 
 #guide: https://cryptography.io/en/latest/hazmat/primitives/aead/
@@ -24,8 +24,17 @@ def AES_GCM_Encrypt(plaintext, key):
     return ciphertext, nonce #returns tuple
 
 def AES_GCM_Decrypt(key, ct, aad, nonce):
-        aesgcm = AESGCM(key)
-        return aesgcm.decrypt(nonce, ct, aad)
+    aesgcm = AESGCM(key)
+    return aesgcm.decrypt(nonce, ct, aad)
 
-        
-        
+def AES_CCM_Encrypt(plaintext, key):
+    plaintext_bytes = plaintext.encode('utf-8')
+    aesccm = AESCCM(key)
+    nonce = os.urandom(13) #largest nonce possible chosen, for max randomness - larger message size not needed (tradeoff between nonce and internal blockcoutner/message size)
+    aad = None
+    ciphertext = aesccm.encrypt(nonce, plaintext_bytes, aad) 
+    return ciphertext, nonce
+
+def AES_CCM_Decrypt(key, ct, aad, nonce):
+    aesccm = AESCCM(key)
+    return aesccm.decrypt(nonce, ct, aad)

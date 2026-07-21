@@ -32,10 +32,15 @@ class Sensor:
         #use HDKF to derive the key
         self.aes_key = HKDF(algorithm=hashes.SHA256(), length=key_length, salt=None, info=b"cgm-aid-connection").derive(self.shared_key) 
 
-    def aes_encryption(self):
+    def aes_gcm_encryption(self):
         self.reading = self.get_next_item()
         self.plaintext = json.dumps(self.reading, indent=4)
         return encryption.AES_GCM_Encrypt(self.plaintext, self.aes_key)
+
+    def aes_ccm_encryption(self):
+        self.reading = self.get_next_item()
+        self.plaintext = json.dumps(self.reading, indent=4)
+        return encryption.AES_CCM_Encrypt(self.plaintext, self.aes_key)
     
 
 

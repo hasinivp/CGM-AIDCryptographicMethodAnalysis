@@ -13,6 +13,7 @@ def measure_computation(func, *args, **kwargs):
     result  = func(*args, **kwargs)
     end = time.perf_counter()
     current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
     elapsed = end-start
     return result, elapsed, peak
 
@@ -38,9 +39,10 @@ def store_summary(enc_times, dec_times, enc_memory, dec_memory,  key_exchange, e
         'Average_Encryption_Time': [mean_enc],
         'Average_Decryption_Time': [mean_dec],
         'Average_Peak_Encryption_Memory': [mean_enc_memory],
-        'Average_Peak_Decryotion_Memory': [mean_dec_memory]
+        'Average_Peak_Decryption_Memory': [mean_dec_memory]
     })
     return df
+
 def aes_key_exchange(channel, test_sensor, test_insulin, key_len):
      #send cgm public key
     channel.send(test_sensor.return_public_key())
@@ -98,6 +100,8 @@ def main():
     full_session("aes_ccm_encryption", "decrypt_aes_ccm", 16, final_dataset_collection, "2_AES_CCM_128")
     full_session("aes_ccm_encryption", "decrypt_aes_ccm", 32, final_dataset_collection, "1_AES_CCM_256")
     full_session("aes_ccm_encryption", "decrypt_aes_ccm", 32, final_dataset_collection, "2_AES_CCM_256")
+    full_session("chacha_encryption", "decrypt_chacha", 32, final_dataset_collection, "1_CHACHA_256") #only can use a 32 byte key for ChaCha Encryption
+    full_session("chacha_encryption", "decrypt_chacha", 32, final_dataset_collection, "2_CHACHA_256")
     df_final = pd.concat(final_dataset_collection, ignore_index = True)
     df_final.to_csv('results.csv' ,index=False)
     

@@ -42,5 +42,7 @@ class Sensor:
         self.plaintext = json.dumps(self.reading, indent=4)
         return encryption.AES_CCM_Encrypt(self.plaintext, self.aes_key)
     
-
-
+    def chacha_encryption(self):
+        self.reading = self.get_next_item()
+        self.plaintext = json.dumps(self.reading, indent=4)
+        return encryption.ChaCha20Poly1305_Encrypt(self.plaintext, self.aes_key)

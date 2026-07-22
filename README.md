@@ -1,8 +1,8 @@
 # CGM-AIDCryptographicMethodAnalysis
 
-Author - Suhasini Prakash
-Mentor - Sabina Sokol
-Organization - Institute for Computing in Research
+Author - Suhasini Prakash  
+Mentor - Sabina Sokol  
+Organization - Institute for Computing in Research  
 
 ---  
 

@@ -21,7 +21,7 @@ plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 plt.show()
 #Plot 2
-ax2 = dataframe[["Average_Peak_Encryption_Memory", "Average_Peak_Decryption_Memory"]].plot(kind="bar", figsize=(10,6), width=.8)
+ax2 = dataframe[["Peak_Protocol_Memory"]].plot(kind="bar", figsize=(10,6), width=.8)
 
 ax2.set_ylabel("Memory Used (bytes)")
 ax2.set_xlabel("Encryption Algorithm")

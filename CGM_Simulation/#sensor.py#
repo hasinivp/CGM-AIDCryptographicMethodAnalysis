@@ -26,7 +26,7 @@ class Sensor:
 
     def prepare_plaintext(self):
         self.reading = self.get_next_item()
-        self.plaintext = json.dumps(self.reading, indent=4)
+        self.plaintext = json.dumps(self.reading, indent=)
     
     def return_public_key(self):
         return self.public_key

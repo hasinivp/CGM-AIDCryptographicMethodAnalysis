@@ -34,7 +34,7 @@ python3 -m venv .venv
 
 source .venv/bin/activate
 
-pip install pycryptodome cryptography pandas
+pip install pycryptodome cryptography pandas memray
 ```
 
 ### 3. Run Simulation + Generate Results

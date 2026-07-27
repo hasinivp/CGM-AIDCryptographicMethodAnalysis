@@ -49,3 +49,10 @@ Running this will generate a results.csv file
 ```bash
 python3 results_plot.py
 ```
+This will save two plot images in the /CGM_Simulation folder representing the time vs memory benchmark.
+
+If you want to run this program so that you can display the plots interactively via a GUI, run
+
+```bash
+python3 results_plot.py --interactive
+```

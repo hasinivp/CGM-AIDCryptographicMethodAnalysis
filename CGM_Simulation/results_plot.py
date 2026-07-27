@@ -1,3 +1,6 @@
+import matplotlib
+import argparse
+
 import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
 
@@ -6,6 +9,14 @@ import pandas as pd
 
 filename = 'results.csv'
 dataframe = pd.read_csv(filename)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--interactive", help="Display plots interactively", action="store_true") #Custom argument/flag to enable interactive viewing of plots
+
+args = parser.parse_args()
+
+if not args.interactive:
+    matplotlib.use('Agg')
 
 dataframe.set_index("Encryption_Algorithm", inplace=True)
 dataframe["Average_Encryption_Time"] *= 10000000
@@ -19,7 +30,11 @@ ax.set_xlabel("Encryption Algorithm")
 ax.set_title("Encryption/Decryption Time Comparsion")
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
-plt.show()
+
+plt.savefig("TimeBenchmark.png")
+
+if args.interactive:
+    plt.show()
 #Plot 2
 ax2 = dataframe[["Peak_Protocol_Memory"]].plot(kind="bar", figsize=(10,6), width=.8)
 
@@ -28,4 +43,8 @@ ax2.set_xlabel("Encryption Algorithm")
 ax2.set_title("Encryption/Decryption Memory  Comparsion")
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
-plt.show()
+
+plt.savefig("MemoryBenchmark.png")
+
+if args.interactive:
+    plt.show()

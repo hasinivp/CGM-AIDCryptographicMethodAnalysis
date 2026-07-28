@@ -47,3 +47,6 @@ class Sensor:
 
     def aes_cbc_hmac_encryption(self):
         return encryption.AES_CBC_HMAC_Encrypt(self.plaintext, self.aes_key)
+
+    def aes_cbc_encryption(self):
+        return encryption.AES_CBC_Encrypt(self.plaintext, self.aes_key)

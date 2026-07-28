@@ -4,12 +4,32 @@ from Crypto.Random import get_random_bytes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM, AESCCM, ChaCha20Poly1305
 import os
 from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
 import base64
 
 #guide: https://cryptography.io/en/latest/hazmat/primitives/aead/
 #https://cryptography.io/en/latest/fernet/
 
-#AES often uses one key that is established at the beginning when the CGM and AID are paired 
+#AES often uses one key that is established at the beginning when the CGM and AID are paired
+
+def AES_CBC_Encrypt(plaintext, session_key):
+    plaintext_bytes = plaintext.encode('utf-8')
+    padder = padding.PKCS7(128).padder()
+    padded_data = padder.update(plaintext_bytes) + padder.finalize()
+    iv = os.urandom(16)
+    cipher = Cipher(algorithms.AES(session_key), modes.CBC(iv))
+    encryptor = cipher.encryptor()
+    ciphertext = encryptor.update(padded_data) + encryptor.finalize()
+    return ciphertext, iv
+
+def AES_CBC_Decrypt(key, ct, nonce):
+    cipher = Cipher(algorithms.AES(key), modes.CBC(nonce))
+    decryptor = cipher.decryptor()
+    decrypted_padded = decryptor.update(ct) + decryptor.finalize()
+    unpadder = padding.PKCS7(128).unpadder()
+    data = unpadder.update(decrypted_padded) + unpadder.finalize()
+    return data
 
 def AES_CBC_HMAC_Encrypt(plaintext, session_key):
     #Fernet is built on top of standard cryptographic primitives - AES-CBC with 128 bytes + HMAC using SHA256

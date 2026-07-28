@@ -3,17 +3,28 @@ from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM, AESCCM, ChaCha20Poly1305
 import os
+from cryptography.fernet import Fernet
+import base64
 
 #guide: https://cryptography.io/en/latest/hazmat/primitives/aead/
-
+#https://cryptography.io/en/latest/fernet/
 
 #AES often uses one key that is established at the beginning when the CGM and AID are paired 
 
-def AES_CBC_Encrypt(plaintext, session_key):
-    cipher = AES.new(key=session_key, mode=AES.MODE_CBC)
-    ciphertext = cipher.iv + cipher.encrypt(pad(plaintext.encode('utf-8')), cipher.block_size)
-    return (ciphertext.hex())
-       
+def AES_CBC_HMAC_Encrypt(plaintext, session_key):
+    #Fernet is built on top of standard cryptographic primitives - AES-CBC with 128 bytes + HMAC using SHA256
+    fernet_key = base64.urlsafe_b64encode(session_key)
+    f = Fernet(fernet_key)
+    plaintext_bytes = plaintext.encode('utf-8')
+    token = f.encrypt(plaintext_bytes)
+    return token, None  #token contains format, timestamp, iv (generated with os), ciphertext, HMAC tag -- nonce is embedded so None returned as placeholder
+
+def AES_CBC_HMAC_Decrypt(token, session_key):
+    fernet_key = base64.urlsafe_b64encode(session_key)
+    f = Fernet(fernet_key)
+    decrypted_bytes = f.decrypt(token)
+    return decrypted_bytes
+    
 def AES_GCM_Encrypt(plaintext, key):      
     plaintext_bytes = plaintext.encode('utf-8')
     aad = None

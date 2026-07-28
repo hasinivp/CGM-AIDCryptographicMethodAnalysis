@@ -44,3 +44,6 @@ class Sensor:
     
     def chacha_encryption(self):
         return encryption.ChaCha20Poly1305_Encrypt(self.plaintext, self.aes_key)
+
+    def aes_cbc_hmac_encryption(self):
+        return encryption.AES_CBC_HMAC_Encrypt(self.plaintext, self.aes_key)

@@ -31,7 +31,7 @@ ax.set_title("Encryption/Decryption Time Comparsion")
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 
-plt.savefig("TimeBenchmark.png")
+plt.savefig("TimeBenchmark.pdf")
 
 if args.interactive:
     plt.show()
@@ -44,7 +44,7 @@ ax2.set_title("Encryption/Decryption Memory  Comparsion")
 plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 
-plt.savefig("MemoryBenchmark.png")
+plt.savefig("MemoryBenchmark.pdf")
 
 if args.interactive:
     plt.show()

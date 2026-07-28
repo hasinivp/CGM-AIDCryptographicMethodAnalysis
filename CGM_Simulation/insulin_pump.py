@@ -32,5 +32,10 @@ class InsulinPump:
         self.plaintext_bytes = encryption.ChaCha20Poly1305_Decrypt(self.aes_key, ciphertext, None, nonce)
         self.plaintext = self.plaintext_bytes.decode('utf-8')
         return self.plaintext
+
+    def decrypt_aes_cbc_hmac(self, token, nonce):
+        self.plaintext_bytes = encryption.AES_CBC_HMAC_Decrypt(token, self.aes_key)
+        self.plaintext = self.plaintext_bytes.decode('utf-8')
+        return self.plaintext
     
     #eventually should convert to another long-term patient database with readings, etc.

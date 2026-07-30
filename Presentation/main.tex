@@ -1,9 +1,15 @@
 \documentclass{beamer}
 \usetheme{Madrid} % Required for inserting images
 \usefonttheme{professionalfonts}
+\usepackage[style=numeric, backend=bibtex]{biblatex}
+\addbibresource{references.bib}
 \usepackage{tabularx}
 \usepackage[absolute,overlay]{textpos}
-\newcommand{\miniscule}{\@setfontsize{\miniscule}{4}{5}}
+\usepackage{hyperref}
+\usepackage{url}
+\urlstyle{same}
+\setbeamerfont{footnote}{size=\Tiny}
+
 \setlength{\TPHorizModule}{\paperwidth}
 \setlength{\TPVertModule}{\paperheight}
 \title[Cryptographic Protocols: Artificial Pancreas]{Evaluation of Cryptographic Protocols for Secure Communication in Artificial Pancreas Systems}
@@ -16,21 +22,6 @@
 \begin{document}
 \begin{frame}[plain] 
     \titlepage
-\end{frame}
-
-
-\begin{frame}[t]{Motivation}
-    \begin{alertblock}{}
-        \centering
-        \footnotesize\textbf{Takeaway: } Artificial Pancreas systems need robust security to be implemented despite limited computational power present.
-    \end{alertblock}
-    \vspace{.8cm}
-    \begin{itemize}
-        \item Estimated 2.5 million users of artificial pancreas systems
-        \item Secure communication needed to prevent tampering of data/insulin commands
-        \item Limited computational power of systems make heavy security protocols difficult to implement
-    \end{itemize}
-    
 \end{frame}
 
 \begin{frame}[t]{Background}
@@ -48,23 +39,37 @@
 
 \end{frame}
 
-\begin{frame}{High Level Architecture}
+
+\begin{frame}[t]{Motivation}
     \begin{alertblock}{}
         \centering
-        \footnotesize \textbf{Takeaway: } Artificial pancreas system - continuous glucose monitor (CGM), automated insulin delivery (AID), mobile device, cloud storage
+        \footnotesize\textbf{Takeaway: } Artificial Pancreas systems need robust security to be implemented despite limited computational power present.
     \end{alertblock}
-    \vspace{.25cm}
-    \begin{figure}
+    \vspace{.8cm}
+    \begin{itemize}
+        \item Estimated 2.5+ million users of artificial pancreas systems
+        \item Secure communication needed to prevent tampering of data/insulin commands
+        \item Limited computational power of systems make heavy security protocols difficult to implement \footfullcite{SecurityThreats}
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}[t]{High Level Architecture}
+    \begin{alertblock}{}
         \centering
-        \includegraphics[width=0.55\linewidth]{HighLevelArchitecture.pdf}
-    \end{figure}
+        \footnotesize \textbf{Takeaway: } Artificial pancreas system - continuous glucose monitor (CGM), automated insulin delivery (AID), mobile device, cloud storage 
+    \end{alertblock}
+    \begin{center}
+    \includegraphics[width=0.45\linewidth]{HighLevelArchitecture.pdf}
+    \end{center}
+    \footfullcite{FDAOverview}
 \end{frame}
 \begin{frame}[t]{STPA-Sec - Overview}
     \begin{alertblock}{}
         \centering
         \footnotesize\textbf{Takeaway: } STPA-Sec is a unique security analysis method connecting security failures to patient harm.
     \end{alertblock}
-    \vspace{1.4cm}
+    \vspace{1cm}
     Why STPA-Sec?
     
     \begin{itemize}
@@ -72,7 +77,8 @@
         \item Analyze communication subsystem \& losses associated with communication failure
         \item Safety-informed evaluation criteria
     \end{itemize}
-
+    \footfullcite{STPAHandbook},
+    \footfullcite{STPASec}
 \end{frame}
 
 \begin{frame}{STPA-Sec Analysis - Control Structure}
@@ -80,10 +86,10 @@
         \centering
         \footnotesize\textbf{Takeaway: } Hierarchical system model with feedback control loops
     \end{alertblock}
-    \vspace{.5cm}
+    \vspace{.4cm}
     \begin{figure}[H]
     \centering
-    \includegraphics[width=0.55\linewidth]{STPAControlStructure.pdf}
+    \includegraphics[width=0.78\linewidth]{STPAControlStructure.pdf}
     \end{figure}
 \end{frame}
 
@@ -92,13 +98,13 @@
         \centering
         \footnotesize\textbf{Takeaway: } Interference in glucose reading transmission can lead to severe implications for patient health/data
     \end{alertblock}
-    \vspace{0.7cm}
+    \vspace{0.6cm}
     \begin{block}{Control Action: Transmit glucose reading (CGM to Controller)}
         \begin{itemize}
             \item UCA1: Glucose reading is blocked from being transmitted
             \item UCA2: Glucose reading is tampered before transmission
             \item UCA3: Controller is flooded with readings
-            \item UCA4: Controller is flooded with readings
+            \item UCA4: Glucose reading is replayed
         \end{itemize}
     \end{block}
     
@@ -115,6 +121,21 @@
         \centering
         \large Communication channel between CGM and AID must ensure freshness, integrity, and authentication - Appropriate encryption mechanisms must be used
     \end{alertblock}
+    \vspace{.5cm}
+    \begin{alertblock}{}
+        \centering
+        \large Evaluate computational overhead of symmetric encryption algorithms meeting security requirements of STPA-Sec
+    \end{alertblock}
+    
+\end{frame}
+
+\begin{frame}{Encryption Terms}
+    \begin{alertblock}{}
+        \centering
+        \textbf{AES: } NIST standardized symmetric block-encryption algorithm\\
+        \vspace{.6cm}
+        \textbf{ChaCha: } Software optimized stream based encryption algorithm
+    \end{alertblock}
     
 \end{frame}
 
@@ -127,23 +148,25 @@
     \begin{center}
     \begin{tabularx}{\textwidth}{|X|X|X|}
     \hline
-    \textbf{Algorithm} & \textbf{Represents} & \textbf{Expected Tradeoff} \\
+    \textbf{\small Algorithm} & \textbf{\small Represents} & \textbf{\small Security Provided} \\
     \hline
-    \texttt{AES-CBC} & \texttt{Confidentiality Only} & \texttt{No integrity, low overhead} \\
+    \texttt{\tiny AES-CBC} & \texttt{\tiny Baseline} & \texttt{\tiny Confidentiality Only} \\
     \hline
-    \texttt{AES-CBC + HMAC} & \texttt{Legacy Authenticated Encryption} & \texttt{High overhead, improved security} \\
+    \texttt{\tiny AES-CBC + HMAC} & \texttt{\tiny Legacy Authenticated Encryption} & \texttt{\tiny Confidentiality, Integrity, Authentication (via HMAC)} \\
     \hline
-    \texttt{AES-CCM} & \texttt{BLE Standard} & \texttt{Secure + Efficient} \\
+    \texttt{\tiny AES-CCM} & \texttt{\tiny BLE Standard} & \texttt{\tiny Confidentiality, Integrity, Authentication} \\
     \hline
-    \texttt{AES-GCM} & \texttt{Modern AES} & \texttt{Modern-day Baseline} \\
+    \texttt{\tiny AES-GCM} & \texttt{\tiny Modern AES} & \texttt{\tiny Confidentiality, Integrity, Authentication} \\
     \hline
-    \texttt{ChaCha20Poly1305} & \texttt{Software-optimized Modern Protocol} & \texttt{Most Software-Efficient} \\
+    \texttt{\tiny ChaCha20Poly1305} & \texttt{\tiny Software-optimized Modern Protocol} & \texttt{\tiny Confidentiality, Integrity, Authentication} \\
     \hline
     \end{tabularx}
     %\label{tab1}
     \end{center}
+    
 \end{table}
-
+\footfullcite{NISTCompare}
+\footfullcite{ChaChaRef}
 \end{frame}
 
 
@@ -155,7 +178,7 @@
             \item CGM /& AID communication
             \item  Symmetric encryption protocols for messages/glucose readings
             \item Computational overhead for encryption algorithms
-            \item Security requirements derived from STRIDE /& STPA Sec frameworks
+            \item Security requirements derived from STRIDE \& STPA Sec frameworks
         \end{itemize}
     \end{block}
 
@@ -179,7 +202,7 @@
 \begin{frame}{Simulation Overview}
     \begin{alertblock}{}
         \centering
-        \footnotesize\textbf{Takeaway: } Used Python to simulate system elements: CGM, AID, Communication channel
+        \footnotesize\textbf{Takeaway: } Used Python to simulate system elements: CGM, AID, Communication channel \footfullcite{GitRepo}
     \end{alertblock}
     \vspace{1.4cm}
     
@@ -187,7 +210,7 @@
         \item Communication between CGM and insulin pump
         \item Communication channel simulated using Python program
         \item One time asymmetric key exchange via ECDH
-        \item Use of cryptography Python module for encryption/decryption
+        \item Use of cryptography Python module for encryption/decryption \footfullcite{PythonLibrary}
     \end{itemize}
 \end{frame}
 
@@ -215,6 +238,12 @@
 \end{frame}
 
 \begin{frame}{Discussion}
+    Considerations
+    \begin{itemize}
+        \item Computer hardware often have AES accelerators 
+        \item CGM/AID systems without this accelarator might have slower AES implementation - ChaCha is superior choice
+    \end{itemize}
+    \vspace{.4cm}
     Key Takeaways         
     \begin{itemize}
         \item Overall most optimized algorithm is AES-CCM
@@ -238,6 +267,7 @@
         \large Questions?
     \end{center}
 \end{frame}
+
 \begin{frame}{Appendix - STRIDE Threat Model}
     \begin{center}
         \begin{figure}

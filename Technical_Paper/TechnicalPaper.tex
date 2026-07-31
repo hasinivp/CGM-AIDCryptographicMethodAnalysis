@@ -18,7 +18,7 @@
 \title{Evaluation of Cryptographic Protocols for Secure Communication in Artificial Pancreas Systems\\
 {\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
 should not be used}
-\thanks{Identify applicable funding agency here. If none, delete this.}
+\thanks{}
 }
 
 \author{\IEEEauthorblockN{\textsuperscript{} Suhasini Prakash}
@@ -40,7 +40,7 @@ Over 7.5 million people globally use continuous glucose monitoring devices (CGMs
 \section{Background}
 
 \subsection{Artificial Pancreas Systems}
-Artificial pancreas systems are used by diabetes patients globally. Patients with diabetes are either unable to produce insulin regularly through their pancreas (Type 1) or are resistant to the absorption of insulin (Type 2). Almost all type 1 patients must artificially inject insulin in some way (such as using an artificial pancreas/insulin pump device), while some type 2 patients make use of such systems as well. These systems are used to mirror the function of healthy pancreas. An artificial pancreas system generally consists of a continuous glucose monitor (CGM), automated insulin device (AID) as well as a controller/algorithm which takes into account the current blood sugar readings, trend, food/physical activities, etc. to calculate the amount of insulin that needs to delivered to the patient [cite]. Most systems also have a smartphone/mobile device that allows for manual input of food/physical activity etc. It also acts as a method for the patient to view glucose readings, trends, and override the insulin pump as needed.
+Artificial pancreas systems are used by diabetes patients globally. Patients with diabetes are either unable to produce insulin regularly through their pancreas (Type 1) or are resistant to the absorption of insulin (Type 2). Almost all type 1 patients must artificially inject insulin in some way (such as using an artificial pancreas/insulin pump device), while some type 2 patients make use of such systems as well. These systems are used to mirror the function of healthy pancreas. An artificial pancreas system generally consists of a continuous glucose monitor (CGM), automated insulin device (AID) as well as a controller/algorithm which takes into account the current blood sugar readings, trend, food/physical activities, etc. to calculate the amount of insulin that needs to delivered to the patient [2]. Most systems also have a smartphone/mobile device that allows for manual input of food/physical activity etc. It also acts as a method for the patient to view glucose readings, trends, and override the insulin pump as needed.
 
 \subsection{High Level System Architectures}
 There are various artificial pancreas system architectures: specifically regarding the placement of the controller algorithm. In many modern systems, the controller is embedded within the insulin pump itself in order to avoid the possibility of the insulin pump failing due to failed Bluetooth connection or damage to the mobile device. However, having the controller embedded in the insulin pump is not am FDA requirement, so there remain models where the controller remains in the smartphone/mobile device or as a separate device or entity. 
@@ -58,9 +58,9 @@ In this study, we are focusing on an architecture where the controller is embedd
 In this study, an initial threat model was developed using the STRIDE threat modeling framework. Developed by Microsoft, this framework is used widely by cybersecurity professionals to categorize threats into one of 6 categories: (S) Spoofing, (T) Tampering, (R) Repudiation, (I) Information Disclosure, (D) Denial of Service, and (E) Elevation of Privilege.  
 
 \subsection{STPA Sec Analysis Method}
-STPA Sec is a security analysis framework developed at MIT that allows analysts to look at a system through a top-down lens focusing on control-feedback loops instead of analyzing vulnerabilities component by component. Moreover, this framework allows the analyst to understand how each failure in communication systems/feedback loops can lead to hazards/losses.
+STPA Sec is a security analysis framework developed at MIT that allows analysts to look at a system through a top-down lens focusing on control-feedback loops instead of analyzing vulnerabilities component by component. Moreover, this framework allows the analyst to understand how each failure in communication systems/feedback loops can lead to hazards/losses. This type of analysis is often applied to medical devices, and an analysis with a focus on CGM/AID communication was completed in order to build an informed evaluation criteria for security protocols.
 
-\subsection{Encryption Algorithms Evaluated}
+\subsection{Encryption Algorithms Evaluated} \label{key}
 \subsubsection{AES-CBC}
 This is a basic algorithm that provides confidentiality through cipher block chaining using a random initialization vector (IV). This uses a block by block encryption mechanism, where before encrypting block N, it is XORed with block N-1. Because of it's block by block encryption nature, it uses padding (oftentimes PKCS-7) to ensure that the plaintext is a multiple of 16 bytes. This makes it vulnerable to padding-oracle and bit-flipping attacks.
 \subsubsection{AES-CBC + HMAC}
@@ -68,9 +68,9 @@ This builds on the previous encryption algorithm by introducing an authenticatio
 \subsubsection{AES-CCM}
 This is the default algorithm used as a part of BLE connections (which most CGM/AID systems make use of). Through the use of AES-CTR (counter-mode), the CCM algorithm is able to mimic a stream-based encryption algorithm allowing for parallel processing.
 \subsubsection{AES-GCM}
-This modern AEAD encryption is often considered the standard for modern day security. 
+This modern AEAD encryption is very similar to AES-CCM, and differs only in the use of the authentication format.
 \subsubsection{ChaCha20Poly1305}
-This method is the most software-optimized algorithm, that is often used by DIY hackers/open source community.
+This method works similarly to
 \section{Methodology}
 \subsection{STRIDE Threat Modeling}
 In order to gain a better understanding of the potential threats, a STRIDE Threat Modeling of the system was conducted. 
@@ -114,13 +114,17 @@ The simulation of the CGM/AID system was done exclusively in Python. A list of t
 \item \texttt{encryption.py}: Module for various encryption algorithms used in this simulation (Uses the cryptography.hazmat module)
 \item \texttt{communication\_channel.py}: Simulates the communication channel between the CGM and AID - in most hardware systems today this is a Bluetooth Low Energy (BLE) connection 
 \item \texttt{main.py}: This is the program that orchestrates full sessions of the CGM/AID by starting with an asymmetric key exchange (ECDH) and then using the various symmetric encryption algorithms for communication of different readings
+\item \texttt{results\_plot.py}: Used numpy and matplotlib to plot results of the simulation.
 \end{itemize}
+\vspace{.2cm}
+Essentially, the 
 \subsection{Benchmarking Metrics}
 \begin{itemize}
-    \item Latency: 
+    \item Latency: the time/reponse delay between providing plain text and receiving encrypted ciphertext or from ciphertext to plaintext (both encryption and decryption latency was measured using time module in python)
     \item Memory: measured using python module memray
 \end{itemize}
 \subsection{STPA-Sec Analysis}
+\vspace{.2cm}
 \textbf{Identifying Losses}\\
 In STPA losses are defined as "something of value to stakeholders" [cite]. The primary stakeholders in this system are the patient, healthcare provider, and system manufacturers. The losses identified are below.
 \begin{itemize}
@@ -130,7 +134,7 @@ In STPA losses are defined as "something of value to stakeholders" [cite]. The p
     \item L4: Loss of patient data/PII
     \item L5: Loss of customer satisfaction
 \end{itemize}
-
+\vspace{.2cm}
 \textbf{Identifying System-level Hazards}\\
 System-level hazards identify system state that with worst-case conditions will result in one or more losses identified above.
 \begin{itemize}
@@ -139,45 +143,56 @@ System-level hazards identify system state that with worst-case conditions will 
     \item H3: The pump is flooded with numerous glucose readings/excessive traffic [L1, L2]
     \item H4: Device hardware/computational resources are fully depleted [L2, L3]
 \end{itemize}
-\textbf{Identifying System-level Constraints}\\
-Essentially, a system-level constraint aligns with a hazard to specify controls/conditions that must be put in place to avoid hazards.
-\begin{itemize}
-    \item SC-1: 
-    \item SC-2:
-    \item SC-3:
-    \item SC-4:
-\end{itemize}
+\vspace{.2cm}
 
+\vspace{.2cm}
 \textbf{Control Structure}\\
 A control structure was then developed based on the controllers, feedback loops, and control actions. Certain elements of this system have been abstracted in order to remain in scope and reduce complexity.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1.0\linewidth]{STPAControlStructure.pdf}
+    \includegraphics[width=1.1\linewidth]{STPAControlStructure.pdf}
     \caption{Hierarchical STPA Control Structure}
     \label{fig:placeholder}
 \end{figure}
 \textbf{Unsafe Control Actions (UCAs)}\\
+
 \begin{table}[H]
     %\caption{}
-    \centering
     \begin{tabularx}{\linewidth}{|X|X|X|X|X|}
         \hline
         \textbf{Control Action} & \textbf{Not providing causes hazard} & \textbf{Providing causes hazard} &\textbf{Incorrect timing or order} & \textbf{Stopped or Applied Too Long} \\
         \hline
-        Transmission of Glucose Reading & Reading blocked from being transmitted & Reading is tampered & Replayed reading & Controller flooded with readings-DDoS \\
+        Transmission of Glucose Reading & Reading blocked from being transmitted & Tampered reading is accepted & Replayed reading & Controller flooded with readings-DDoS \\
         \hline
-        Sensor reading glucose levels & Sensor unable to identify glucose level & - & - & - \\
+        Sensor reading glucose levels & Sensor unable to identify glucose level & Incorrect measurement & - & Sensor unable to store new readings \\
         \hline
-        Glucose data/trends to patient device & - & - & - & -\\
+        Glucose data/trends to patient device & Patient not alerted & False alert issued to patient & - & -\\
         \hline
-        Insulin delivery to patient & Insulin is not sent via actuator to patient & - & - & - \\
+        Insulin delivery to patient & Insulin is not sent via actuator to patient & Over/under dose of insulin provided & - & - \\
         \hline
-        Patient override to controller commands & - & - & - & -\\
+        Patient override to controller commands & - & Unauthorized override sent & Patient override is sent too late & -\\
         \hline
     \end{tabularx}
-    %\label{tab1}
-    
-\end{table}
+    \end{table}
+\vspace{.2cm}
+The focus of this specific study is the first row of unsafe control actions derived from the CGM to AID glucose reading communication. \\
+\textbf{Engineering Implications - Security Constraints}\\
+Essentially, a system-level constraint aligns with a hazard to specify controls/conditions that must be put in place to avoid hazards. 
+\begin{itemize}
+    \item SC-1: Integrity of messeges must be preserved - 
+    \item SC-2:
+    \item SC-3:
+    \item SC-4:
+\end{itemize}
+\subsection{Encryption Algorithm Choices}
+The encryption algorithms chosen are a direct result of the engineering implications of the STPA-Sec analysis. To understand how each encryption algorithm works, refer back to \ref{key}. 
+\begin{itemize}
+    \item AES-CBC: chosen as purely a baseline legacy algorithm as this does not meet the requirements of the STPA-Sec analysis (Confidentiality-Only algorithm)
+    \item AES-CBC + HMAC: Acts as a legacy authentication algorithm that was previously used for medical device security
+    \item AES-CCM: Bluetooth Low Energy (BLE) standard - most commonly used in artificial pancreas system  
+    \item AES-GCM: Modern security "gold-standard"
+    \item ChaCha20Poly1305: Most software optimized encryption algorithms, often used by DIY hackers
+\end{itemize}
 
 \section{Results}
 \subsection{Computational Overhead Results}
@@ -195,19 +210,20 @@ The clear outlier here is CBC-HMAC, followed by the CBC encryption algorithm. Th
     \caption{Memory Benchmark Results}
     \label{fig:placeholder}
 \end{figure}
-The memory benchmark shows that AES-GCM \& the ChaCha algorithm have the highest memory overhead, with AES-CCM using the lowest. This specific graph does not show significant differences between different key sizes, there will be a computational overhead in terms of storing the additional key/ciphertext bits for the small embedded systems.
+The memory benchmark shows that AES-GCM \& the ChaCha algorithm have the highest memory overhead, with AES-CCM using the lowest. This specific graph does not show significant differences between different key sizes, there will be a computational overhead in terms of storing the additional key/cipher text bits for the small embedded systems.
 
 \section{Discussion}
-\subsection{Key Takeaways}
 \subsection{AES Accelerators}
-One thing to note when discussing the implementation of these algorithms in an embedded system versus computer hardware is the presence of AES accelerators. Most modern day computer hardware (including the computer the simulation was run on) have AES accelerators, which significantly improves the time/computational overhead of AES based encryption systems. While many modern day artifical pancreas systems do have some form of an AES accelerator, in systems that do not have this compoenent, we may see that the ChaCha algorithm proves to be the superior choice.
+One thing to note when discussing the implementation of these algorithms in an embedded system versus computer hardware is the presence of AES accelerators. Most modern day computer hardware (including the computer the simulation was run on) have AES accelerators, which significantly improves the time/computational overhead of AES based encryption systems. While many modern day artificial pancreas systems do have some form of an AES accelerator, in systems that do not have this compoenent, we may see that the ChaCha algorithm proves to be the superior choice.
 \subsection{Limitations}
-The largest limitation of this study is its inability to give results accurate to how encryption algorithms will work on an embedded systems device/actual artifical pancreas system. 
+The largest limitation of this study is its inability to give results accurate to how encryption algorithms will work on an embedded systems device/actual artificial pancreas system. 
 
 \section{Conclusion}
-
+Overall, with both memory and latency, AES-CCM was the most optimized algorithm, that still met all security requirements. This is in alignment with current practices, as AES-CCM is the primary encryption mechanism used in BLE. Moreover, with regard to latency, all modern-day algorithms have similar optimization making security be the top priority when choosing algorithms. 
+\vspace{.2cm}
 \subsection{Future Work}
-Following this simulation, the next obvious step would be to take this simulation and implement it in a embedded systems device to better simulate the CGM/AID system. Additionally, expanding this simulation to analyze different forms of key exchange/asymmetric encryption algorithms will provide insight into that portion of the encryption process. 
+Following this simulation, the next obvious step would be to take this simulation and implement it in a embedded systems device to better simulate the CGM/AID system. Additionally, expanding this simulation to analyze different forms of key exchange/asymmetric encryption algorithms will provide insight into that portion of the encryption process. Further expanding the scope to include how potential attacks can influence encryption algorithm behaviors, or how BLE connection drop will affect the communication pipeline will add to 
+
 
 \section*{Acknowledgment}
 

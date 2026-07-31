@@ -56,3 +56,19 @@ If you want to run this program so that you can display the plots interactively 
 ```bash
 python3 results_plot.py --interactive
 ```
+## Generating Documentation
+```bash
+sudo apt update && sudo apt install texlive-full
+```
+
+### Compiling Presentation
+```bash
+cd Presentation/
+pdflatex main.tex
+```
+### Compiling Paper
+
+```bash
+cd Technical_Paper/
+pdflatex TechnicalPaper.tex
+```

@@ -60,7 +60,7 @@ In this study, an initial threat model was developed using the STRIDE threat mod
 \subsection{STPA Sec Analysis Method}
 STPA Sec is a security analysis framework developed at MIT that allows analysts to look at a system through a top-down lens focusing on control-feedback loops instead of analyzing vulnerabilities component by component. Moreover, this framework allows the analyst to understand how each failure in communication systems/feedback loops can lead to hazards/losses. This type of analysis is often applied to medical devices, and an analysis with a focus on CGM/AID communication was completed in order to build an informed evaluation criteria for security protocols.
 
-\subsection{Encryption Algorithms Evaluated} \label{key}
+\subsection{Encryption Algorithms Evaluated[1][8]}\label{key}
 \subsubsection{AES-CBC}
 This is a basic algorithm that provides confidentiality through cipher block chaining using a random initialization vector (IV). This uses a block by block encryption mechanism, where before encrypting block N, it is XORed with block N-1. Because of it's block by block encryption nature, it uses padding (oftentimes PKCS-7) to ensure that the plaintext is a multiple of 16 bytes. This makes it vulnerable to padding-oracle and bit-flipping attacks.
 \subsubsection{AES-CBC + HMAC}
@@ -68,9 +68,9 @@ This builds on the previous encryption algorithm by introducing an authenticatio
 \subsubsection{AES-CCM}
 This is the default algorithm used as a part of BLE connections (which most CGM/AID systems make use of). Through the use of AES-CTR (counter-mode), the CCM algorithm is able to mimic a stream-based encryption algorithm allowing for parallel processing.
 \subsubsection{AES-GCM}
-This modern AEAD encryption is very similar to AES-CCM, and differs only in the use of the authentication format.
+This modern AEAD encryption is very similar to AES-CCM, and differs only in the use of the authentication format. AES-GCM makes use of the GHASH for authentication.
 \subsubsection{ChaCha20Poly1305}
-This method works similarly to
+This method works similarly to AES-CCM/GCM, but runs on the most software-optimized algorithms.
 \section{Methodology}
 \subsection{STRIDE Threat Modeling}
 In order to gain a better understanding of the potential threats, a STRIDE Threat Modeling of the system was conducted. 
@@ -117,7 +117,7 @@ The simulation of the CGM/AID system was done exclusively in Python. A list of t
 \item \texttt{results\_plot.py}: Used numpy and matplotlib to plot results of the simulation.
 \end{itemize}
 \vspace{.2cm}
-Essentially, the 
+Essentially, the simulation one symmetric encryption algorithm per session. At the beginning of each session the sensor and insulin pump are initialized and introduced to each other via an ECDH asymmetric key exchange. Each device then has a key that is used to encrypt/decrypt messages sent via symmetric encryption algorithms.
 \subsection{Benchmarking Metrics}
 \begin{itemize}
     \item Latency: the time/reponse delay between providing plain text and receiving encrypted ciphertext or from ciphertext to plaintext (both encryption and decryption latency was measured using time module in python)
@@ -126,7 +126,7 @@ Essentially, the
 \subsection{STPA-Sec Analysis}
 \vspace{.2cm}
 \textbf{Identifying Losses}\\
-In STPA losses are defined as "something of value to stakeholders" [cite]. The primary stakeholders in this system are the patient, healthcare provider, and system manufacturers. The losses identified are below.
+In STPA losses are defined as "something of value to stakeholders" [4]. The primary stakeholders in this system are the patient, healthcare provider, and system manufacturers. The losses identified are below.
 \begin{itemize}
     \item L1: Loss of life/harm to patient health
     \item L2: Loss of device function/medical efficacy
@@ -143,9 +143,14 @@ System-level hazards identify system state that with worst-case conditions will 
     \item H3: The pump is flooded with numerous glucose readings/excessive traffic [L1, L2]
     \item H4: Device hardware/computational resources are fully depleted [L2, L3]
 \end{itemize}
-\vspace{.2cm}
-
-\vspace{.2cm}
+\textbf{Security Constraints}
+Essentially, a system-level constraint aligns with a hazard to specify controls/conditions that must be put in place to avoid hazards. 
+\begin{itemize}
+    \item SC-1: Integrity of messages must be preserved - preventing tampering of messages 
+    \item SC-2: Authentication must be in place to prevent malicious actors to gain access to private health information
+    \item SC-3: Input must be validated and limited to prevent flooding (denial of service type attacks)
+    \item SC-4: Appropriate warnings to patient and precautionary measures must be set to avoid full depletion of computational resources (example: warning days/weeks in advance to patient to prevent full use of resources)
+\end{itemize}
 \textbf{Control Structure}\\
 A control structure was then developed based on the controllers, feedback loops, and control actions. Certain elements of this system have been abstracted in order to remain in scope and reduce complexity.
 \begin{figure}[H]
@@ -155,14 +160,14 @@ A control structure was then developed based on the controllers, feedback loops,
     \label{fig:placeholder}
 \end{figure}
 \textbf{Unsafe Control Actions (UCAs)}\\
-
+\renewcommand{\arraystretch}{1.3}
 \begin{table}[H]
-    %\caption{}
+    \caption{}
     \begin{tabularx}{\linewidth}{|X|X|X|X|X|}
         \hline
         \textbf{Control Action} & \textbf{Not providing causes hazard} & \textbf{Providing causes hazard} &\textbf{Incorrect timing or order} & \textbf{Stopped or Applied Too Long} \\
         \hline
-        Transmission of Glucose Reading & Reading blocked from being transmitted & Tampered reading is accepted & Replayed reading & Controller flooded with readings-DDoS \\
+        Transmission of Glucose Reading & Reading blocked from being transmitted & Tampered reading is accepted & Replayed reading is transmitted & Controller flooded with readings-DDoS \\
         \hline
         Sensor reading glucose levels & Sensor unable to identify glucose level & Incorrect measurement & - & Sensor unable to store new readings \\
         \hline
@@ -173,17 +178,44 @@ A control structure was then developed based on the controllers, feedback loops,
         Patient override to controller commands & - & Unauthorized override sent & Patient override is sent too late & -\\
         \hline
     \end{tabularx}
-    \end{table}
-\vspace{.2cm}
-The focus of this specific study is the first row of unsafe control actions derived from the CGM to AID glucose reading communication. \\
-\textbf{Engineering Implications - Security Constraints}\\
-Essentially, a system-level constraint aligns with a hazard to specify controls/conditions that must be put in place to avoid hazards. 
+\end{table}
+\textbf{Casual Scenarios \& Engineering Implication}\\
+The focus of this specific study is the first row of unsafe control actions - derived from the CGM to AID glucose reading communication. \\
+
 \begin{itemize}
-    \item SC-1: Integrity of messeges must be preserved - 
-    \item SC-2:
-    \item SC-3:
-    \item SC-4:
+    \item UCA: Reading blocked from being transmitted
+    \item Scenario: No glucose reading is received by the AID controller, forcing it to blindly calculate insulin.
+    \item Associated Casual Factors: Incorrect insulin delivered to patient, patient data loss.
 \end{itemize}
+
+Engineering Implications: The communication channel should be able to detect missing readings and alert patient immediately while transitioning to a safe/baseline mode. \\
+\vspace{.1cm}
+
+\begin{itemize}
+    \item UCA: Tampered reading is accepted by AID controller
+    \item Scenario: A modified glucose reading is processed and accepted 
+    \item Associated Casual Factors: 
+\end{itemize}
+
+Engineering Implications: Integrity and authentication of messages must be maintained to avoid tampering of data.\\
+\vspace{.1cm}
+
+\begin{itemize}
+    \item UCA: Replayed reading is transmitted to AID
+    \item Scenario: A previous glucose reading is accepted as current, leading to incorrect insulin amount calculated.
+    \item Associated Casual Factors: Timestamp not checked; nonce/counter validation missing.
+\end{itemize}
+
+Engineering Implications: The communication channel should verify timestamp, enable replay protection, and use counter/nonce verification to avoid such attacks.\\
+\vspace{.1cm}
+\begin{itemize}
+    \item UCA: controller is flooded with readings 
+    \item Scenario: The communication channel is flooded with readings, causing the AID algorithm to be overloaded with data.
+    \item Associated Casual Factors: Lack of duplicate detection; AID algorithm failure.
+\end{itemize}
+
+Engineering Implications: Abnormal traffic should be detected and mitigated by the AID algorithm.\\
+
 \subsection{Encryption Algorithm Choices}
 The encryption algorithms chosen are a direct result of the engineering implications of the STPA-Sec analysis. To understand how each encryption algorithm works, refer back to \ref{key}. 
 \begin{itemize}
